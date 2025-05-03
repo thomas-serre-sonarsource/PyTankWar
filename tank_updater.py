@@ -1,5 +1,4 @@
 from arena import Arena
-from arena_drawer import ArenaDrawer
 from tank import Action, Tank
 import pygame
 

@@ -1,5 +1,5 @@
 from arena import Arena
-from tank import Tank, Action
+from tank import Tank
 
 class TankMover:
 

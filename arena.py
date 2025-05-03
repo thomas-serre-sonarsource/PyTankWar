@@ -1,5 +1,3 @@
-import pygame
-
 class Arena:
     def __init__(self):
         self.cell_per_row = 20

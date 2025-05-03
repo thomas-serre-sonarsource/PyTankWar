@@ -1,4 +1,3 @@
-import pygame
 import enum 
 
 class Action(enum.Enum):
