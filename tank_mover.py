@@ -37,14 +37,24 @@ class TankMover:
         if tank.x == arena.cell_per_row:
             tank.x = 0
         
-    def turn_left(self, tank: Tank):
-        if tank.orientation.value + 1 == 5:
-            tank.orientation = Orientation.NORTH
-        else:
-            tank.orientation = Orientation(tank.orientation.value + 1)
+    def turn_tank_left(self, tank: Tank):
+        tank.orientation = self.turn_left(tank.orientation)
 
-    def turn_right(self, tank: Tank):
-        if tank.orientation.value - 1 == 0 :
-            tank.orientation = Orientation.EAST
-        else:
-            tank.orientation = Orientation(tank.orientation.value - 1)
+    def turn_tank_right(self, tank: Tank):
+        tank.orientation = self.turn_right(tank.orientation)
+
+    def turn_turret_left(self, tank: Tank):
+        tank.turret_orientation = self.turn_left(tank.turret_orientation)
+
+    def turn_turret_right(self, tank: Tank):
+        tank.turret_orientation = self.turn_right(tank.turret_orientation)
+
+    def turn_right(self, orientation: Orientation):
+        if orientation.value - 1 == 0 :
+            return Orientation.EAST
+        return Orientation(orientation.value - 1)
+
+    def turn_left(self, orientation: Orientation):
+        if orientation.value + 1 == 5:
+            return  Orientation.NORTH
+        return Orientation(orientation.value + 1)
