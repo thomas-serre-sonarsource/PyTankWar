@@ -13,12 +13,13 @@ class Action(enum.Enum):
 
 class Tank:
 
-    def __init__(self):
+    def __init__(self, x:int, y:int, color:str):
         self.next_action = None 
-        self.x = 10
-        self.y = 10
+        self.x = x
+        self.y = y
         self.orientation = Orientation.NORTH
         self.turret_orientation = Orientation.NORTH
+        self.color = color
 
     def set_next_action(self, action):
         self.next_action = action        

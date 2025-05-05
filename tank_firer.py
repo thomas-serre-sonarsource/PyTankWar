@@ -9,5 +9,5 @@ class TankFirer:
         self.missiles = missiles
 
     def fire(self, tank: Tank):
-        missile = Missile(tank.x, tank.y, tank.turret_orientation)
+        missile = Missile(tank.x, tank.y, tank.turret_orientation, tank.color)
         self.missiles.append(missile)
