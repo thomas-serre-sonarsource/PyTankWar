@@ -1,8 +1,6 @@
 from arena import Arena
 from missile import Missile
 from missile_mover import MissileMover
-from tank import Action, Tank
-import pygame
 
 class MissileUpdater:
 

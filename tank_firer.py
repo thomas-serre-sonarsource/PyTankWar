@@ -1,6 +1,6 @@
 from arena import Arena
 from missile import Missile
-from tank import Action, Tank
+from tank import Tank
 
 class TankFirer:
 
