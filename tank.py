@@ -1,4 +1,6 @@
-import enum 
+import enum
+
+from orientation import Orientation 
 
 class Action(enum.Enum):
     FORWARD = 1 
@@ -7,12 +9,7 @@ class Action(enum.Enum):
     TURN_RIGHT = 4
     TURN_TURRET_LEFT = 5 
     TURN_TURRET_RIGHT = 6 
-    
-class Orientation(enum.Enum):
-    NORTH = 1
-    WEST = 2
-    SOUTH = 3
-    EAST = 4
+    FIRE = 7
 
 class Tank:
 

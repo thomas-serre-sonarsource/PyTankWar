@@ -1,5 +1,6 @@
 from arena_drawer import ArenaDrawer
-from tank import Tank, Orientation
+from tank import Tank
+from orientation import Orientation
 import pygame
 
 class TankDrawer:

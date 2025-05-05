@@ -1,5 +1,6 @@
 from arena import Arena
-from tank import Orientation, Tank
+from orientation import Orientation
+from tank import Tank
 
 class TankMover:
 
