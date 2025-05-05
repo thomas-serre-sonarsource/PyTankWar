@@ -1,3 +1,4 @@
+from colors import COLORS
 from arena_drawer import ArenaDrawer
 from missile import Missile
 from orientation import Orientation
@@ -6,13 +7,12 @@ import pygame
 class MissileDrawer:
 
     def __init__(self):
-        colors = ["red", "green"]
         images_per_color = {}
-        for color in colors:
+        for color in COLORS:
             images_per_color[color] = pygame.image.load(f"images/{color}_missile.png")
 
         self.missile_image_per_color_and_orientation = {}
-        for color in colors:
+        for color in COLORS:
             missile_image = images_per_color[color]
             
             self.missile_image_per_color_and_orientation[(color, Orientation.NORTH)] = missile_image

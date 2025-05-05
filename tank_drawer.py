@@ -1,3 +1,4 @@
+from colors import COLORS
 from arena_drawer import ArenaDrawer
 from tank import Tank
 from orientation import Orientation
@@ -6,15 +7,14 @@ import pygame
 class TankDrawer:
 
     def __init__(self):
-        colors = ["red", "green"]
         images_per_color, turret_images_per_color = {}, {}
-        for color in colors:
+        for color in COLORS:
             images_per_color[color] = pygame.image.load(f"images/{color}_tank_body.png")
             turret_images_per_color[color] = pygame.image.load(f"images/{color}_tank_turret.png")
 
         self.body_image_per_color_and_orientation = {}
         self.turret_image_per_color_and_orientation = {}
-        for color in colors:
+        for color in COLORS:
             body_image = images_per_color[color]
             self.body_image_per_color_and_orientation[(color, Orientation.NORTH)] = body_image
             self.body_image_per_color_and_orientation[(color, Orientation.SOUTH)] = pygame.transform.flip(body_image, False, True)
