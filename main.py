@@ -26,7 +26,6 @@ while True:
             pygame.quit()
             exit()
 
-    tank.set_next_action(Action.FORWARD)
 
     tank_updater.update(tank)
 
