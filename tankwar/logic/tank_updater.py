@@ -1,9 +1,9 @@
-from arena import Arena
-from missile import Missile
-from tank import Action, Tank
+from tankwar.logic.arena import Arena
+from tankwar.logic.missile import Missile
+from tankwar.logic.tank import Action, Tank
 
-from tank_firer import TankFirer
-from tank_mover import TankMover
+from tankwar.logic.tank_firer import TankFirer
+from tankwar.logic.tank_mover import TankMover
 
 class TankUpdater:
 

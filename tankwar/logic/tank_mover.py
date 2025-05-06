@@ -1,6 +1,6 @@
-from arena import Arena
-from orientation import Orientation
-from tank import Tank
+from tankwar.logic.arena import Arena
+from tankwar.logic.orientation import Orientation
+from tankwar.logic.tank import Tank
 
 class TankMover:
 

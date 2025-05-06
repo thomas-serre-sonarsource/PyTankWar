@@ -1,7 +1,9 @@
-from colors import COLORS
+from tankwar.logic.colors import COLORS
 from arena_drawer import ArenaDrawer
-from missile import Missile
-from orientation import Orientation
+from tankwar.logic.missile import Missile
+from tankwar.logic.orientation import Orientation
+from tankwar.drawer.images import IMAGE_PATH
+
 import pygame
 
 class MissileDrawer:
@@ -9,7 +11,7 @@ class MissileDrawer:
     def __init__(self):
         images_per_color = {}
         for color in COLORS:
-            images_per_color[color] = pygame.image.load(f"images/{color}_missile.png")
+            images_per_color[color] = pygame.image.load(IMAGE_PATH.joinpath(f"{color}_missile.png"))
 
         self.missile_image_per_color_and_orientation = {}
         for color in COLORS:

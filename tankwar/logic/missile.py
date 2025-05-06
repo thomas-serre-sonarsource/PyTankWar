@@ -1,4 +1,4 @@
-from orientation import Orientation
+from tankwar.logic.orientation import Orientation
 
 class Missile:
 

@@ -1,6 +1,6 @@
 import pygame
 
-from arena import Arena
+from tankwar.logic.arena import Arena 
 
 class ArenaDrawer:
     def __init__(self):

@@ -1,6 +1,6 @@
-from arena import Arena
-from missile import Missile
-from tank import Tank
+from tankwar.logic.arena import Arena
+from tankwar.logic.missile import Missile
+from tankwar.logic.tank import Tank
 
 class TankFirer:
 

@@ -1,6 +1,6 @@
-from orientation import Orientation
-from missile import Missile
-from arena import Arena
+from tankwar.logic.orientation import Orientation
+from tankwar.logic.missile import Missile
+from tankwar.logic.arena import Arena
 
 class MissileMover:
 

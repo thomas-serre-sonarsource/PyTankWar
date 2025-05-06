@@ -1,6 +1,6 @@
-from arena import Arena
-from missile import Missile
-from missile_mover import MissileMover
+from tankwar.logic.arena import Arena
+from tankwar.logic.missile import Missile
+from tankwar.logic.missile_mover import MissileMover
 
 class MissileUpdater:
 

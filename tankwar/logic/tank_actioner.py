@@ -1,4 +1,4 @@
-from tank import Action, Tank
+from tankwar.logic.tank import Action, Tank
 import os
 
 class TankActioner:

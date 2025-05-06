@@ -1,7 +1,8 @@
-from colors import COLORS
+from tankwar.logic.colors import COLORS
 from arena_drawer import ArenaDrawer
-from tank import Tank
-from orientation import Orientation
+from tankwar.logic.tank import Tank
+from tankwar.logic.orientation import Orientation
+from tankwar.drawer.images import IMAGE_PATH
 import pygame
 
 class TankDrawer:
@@ -9,8 +10,8 @@ class TankDrawer:
     def __init__(self):
         images_per_color, turret_images_per_color = {}, {}
         for color in COLORS:
-            images_per_color[color] = pygame.image.load(f"images/{color}_tank_body.png")
-            turret_images_per_color[color] = pygame.image.load(f"images/{color}_tank_turret.png")
+            images_per_color[color] = pygame.image.load(IMAGE_PATH.joinpath(f"{color}_tank_body.png"))
+            turret_images_per_color[color] = pygame.image.load(IMAGE_PATH.joinpath(f"{color}_tank_turret.png"))
 
         self.body_image_per_color_and_orientation = {}
         self.turret_image_per_color_and_orientation = {}

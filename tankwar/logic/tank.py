@@ -1,6 +1,6 @@
 import enum
 
-from orientation import Orientation 
+from tankwar.logic.orientation import Orientation 
 
 class Action(enum.Enum):
     FORWARD = 1 
@@ -13,12 +13,12 @@ class Action(enum.Enum):
 
 class Tank:
 
-    def __init__(self, x:int, y:int, color:str):
+    def __init__(self, x:int, y:int, color:str, orientation:Orientation = Orientation.NORTH, turret_orientation:Orientation = Orientation.NORTH):
         self.next_action = None 
         self.x = x
         self.y = y
-        self.orientation = Orientation.NORTH
-        self.turret_orientation = Orientation.NORTH
+        self.orientation = orientation
+        self.turret_orientation = turret_orientation
         self.color = color
 
     def set_next_action(self, action):

@@ -1,6 +1,6 @@
-from explosion import Explosion
-from missile import Missile
-from tank import Tank
+from tankwar.logic.explosion import Explosion
+from tankwar.logic.missile import Missile
+from tankwar.logic.tank import Tank
 
 class MissileCollider:
 
