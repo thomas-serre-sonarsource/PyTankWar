@@ -61,5 +61,23 @@ def get_game_status():
     print("Game status fetched.", time.time())
     return content
 
+@app.route("/game/pause", methods=["POST"])
+def pause_game():
+    with open("game_status.txt", "w") as file:
+        file.write("PAUSED")
+    return jsonify({"status": "Game paused"})
+
+@app.route("/game/run", methods=["POST"])
+def run_game():
+    with open("game_status.txt", "w") as file:
+        file.write("RUNNING")
+    return jsonify({"status": "Game running"})
+
+@app.route("/game/reset", methods=["POST"])
+def reset_game():
+    with open("game_status.txt", "w") as file:
+        file.write("RESET")
+    return jsonify({"status": "Game reset"})
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, threaded=True)

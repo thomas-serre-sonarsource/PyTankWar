@@ -44,7 +44,8 @@ class GameDrawer:
                 self.read_state()
                 self.draw()
                 self.last_draw = pygame.time.get_ticks()
-                
+            time.sleep(0.01)
+
     def read_state(self):
         print("Reading state from server...", time.time())
 
