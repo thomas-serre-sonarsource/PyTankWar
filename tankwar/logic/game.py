@@ -1,6 +1,7 @@
 
 import time
 from tankwar.logic.arena import Arena
+from tankwar.logic.game_cleaner import GameCleaner
 from tankwar.logic.game_writer import GameWriter
 from tankwar.logic.missile_collider import MissileCollider
 from tankwar.logic.missile_updater import MissileUpdater
@@ -35,6 +36,7 @@ class Game:
 
         self.turn = 0
 
+        self.game_cleaner = GameCleaner()
         self.game_writer = GameWriter()
         
 
@@ -42,7 +44,7 @@ class Game:
         if time.time() - self.last_update > 1.:
             print("Updating game state...", time.time())
             for tank in tanks:
-                self.tank_actioner.read_action(tank)
+                self.tank_actioner.read_action(tank, self.turn)
                 self.tank_updater.update(tank)
         
             for missile in missiles:
@@ -52,6 +54,7 @@ class Game:
             self.last_update = time.time()
             self.turn += 1
             self.game_writer.write(self)
+            self.game_cleaner.clean(self)
 
         if time.time() - self.last_update > 0.11:
             time.sleep(0.1)

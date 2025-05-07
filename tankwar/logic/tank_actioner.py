@@ -3,10 +3,13 @@ import os
 
 class TankActioner:
 
-    def read_action(self, tank: Tank):
-        if( not os.path.exists(f"{tank.color}_action.txt")):
+    def read_action(self, tank: Tank, turn :int):
+
+        filename = f"{tank.color}_action_{turn}.txt"
+        if(not os.path.exists(filename)):
             return 
-        with open(f"{tank.color}_action.txt", "r") as file:
+        
+        with open(filename, "r") as file:
             action = file.read().strip()
             if action == "FORWARD":
                 tank.next_action = Action.FORWARD

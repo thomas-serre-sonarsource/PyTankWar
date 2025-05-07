@@ -29,10 +29,10 @@ class AIPlayer:
             ])
         
         print(f"AI {self.color} is playing turn {current_turn} with action {random_action}")
-        self.set_action(random_action)
+        self.set_action(random_action, current_turn)
         
-    def set_action(self, action_str):
-        requests.get(f"http://127.0.0.1:5000/{self.color}/{action_str}")            
+    def set_action(self, action_str, turn):
+        requests.post(f"http://127.0.0.1:5000/action",json={"action": action_str, "turn": turn, "color": self.color})            
 
 if __name__ == '__main__':
     ai_players = [ AIPlayer("red"), AIPlayer("blue"), AIPlayer("orange"), AIPlayer("green") ]
