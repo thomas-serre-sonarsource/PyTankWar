@@ -28,8 +28,7 @@ class Game:
         self.tanks.append(Tank(5, 15, "blue"))
         self.tanks.append(Tank(15, 5, "orange"))
 
-        self.tank_mover = TankMover()
-        self.tank_updater = TankUpdater(self.arena, self.missiles)
+        self.tank_updater = TankUpdater(self.arena, self.missiles, self.tanks)
         self.tank_actioner = TankActioner()
 
         self.missile_collider = MissileCollider(self.missiles, self.tanks, self.explosions)

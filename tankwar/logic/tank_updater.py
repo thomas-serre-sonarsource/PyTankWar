@@ -7,9 +7,9 @@ from tankwar.logic.tank_mover import TankMover
 
 class TankUpdater:
 
-    def __init__(self, arena: Arena, missiles: list[Missile]):
+    def __init__(self, arena: Arena, missiles: list[Missile], tanks: list[Tank]):
         self.arena = arena  
-        self.tank_mover = TankMover()
+        self.tank_mover = TankMover(tanks)
         self.tank_firer = TankFirer(arena, missiles)
 
     def update(self, tank: Tank):

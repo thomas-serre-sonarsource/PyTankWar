@@ -4,7 +4,11 @@ from tankwar.logic.tank import Tank
 
 class TankMover:
 
+    def __init__(self, tanks: list[Tank]):
+        self.tanks = tanks
+
     def move_backward(self, tank: Tank, arena: Arena):
+        x0, y0 = tank.x, tank.y
         match tank.orientation:
             case Orientation.NORTH:
                 tank.y += 1
@@ -15,8 +19,11 @@ class TankMover:
             case Orientation.WEST:
                 tank.x += 1
         self.handle_movement_out_of_arena(tank, arena)
+        if self.is_collision_with_tank(tank):
+            tank.x, tank.y = x0, y0
 
     def move_forward(self, tank: Tank, arena: Arena):
+        x0, y0 = tank.x, tank.y
         match tank.orientation:
             case Orientation.NORTH:
                 tank.y -= 1
@@ -27,7 +34,15 @@ class TankMover:
             case Orientation.WEST:
                 tank.x -= 1
         self.handle_movement_out_of_arena(tank, arena)
-        
+        if self.is_collision_with_tank(tank):
+            tank.x, tank.y = x0, y0
+
+    def is_collision_with_tank(self, tank: Tank):
+        for other_tank in self.tanks:
+            if tank != other_tank and tank.x == other_tank.x and tank.y == other_tank.y:
+                return True 
+        return False 
+      
     def handle_movement_out_of_arena(self, tank: Tank, arena: Arena):
         if tank.y == -1:
             tank.y = arena.cell_per_col - 1

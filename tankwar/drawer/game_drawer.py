@@ -7,16 +7,11 @@ from tankwar.logic.arena import Arena
 from arena_drawer import ArenaDrawer
 from tankwar.logic.explosion import Explosion
 from explosion_drawer import ExplosionDrawer
-from tankwar.logic.game_writer import GameWriter
 from tankwar.logic.missile import Missile
-from tankwar.logic.missile_collider import MissileCollider
 from missile_drawer import MissileDrawer
 from tankwar.logic.orientation import Orientation
 from tankwar.logic.tank import Tank
-from tankwar.logic.tank_actioner import TankActioner
 from tank_drawer import TankDrawer
-from tankwar.logic.tank_mover import TankMover
-from tankwar.logic.tank_updater import TankUpdater
 
 pygame.init()
 
@@ -37,13 +32,6 @@ class GameDrawer:
 
         self.tanks = [] 
         self.tank_drawer = TankDrawer()
-        self.tank_mover = TankMover()
-        self.tank_updater = TankUpdater(self.arena, self.missiles)
-        self.tank_actioner = TankActioner()
-
-        self.missile_collider = MissileCollider(self.missiles, self.tanks, self.explosions)
-
-        self.game_writer = GameWriter()
 
 
     def run(self):
