@@ -52,7 +52,11 @@ class GameDrawer:
         r = requests.get("http://127.0.0.1:5000/status")
         print("State downloaded from server...", time.time())
         json_str = r.content.decode("utf-8")
-        json_dict = json.loads(json_str)
+        try :
+            json_dict = json.loads(json_str)
+        except json.JSONDecodeError:
+            print("Error decoding JSON:", json_str)
+            return
         self.arena.cell_per_row = json_dict["arena"]["cell_per_row"]
         self.arena.cell_per_col = json_dict["arena"]["cell_per_col"]
         self.tanks = [Tank(tank["x"], tank["y"], tank["color"], Orientation(tank["orientation"]), Orientation(tank["turret_orientation"])) for tank in json_dict["tanks"]]

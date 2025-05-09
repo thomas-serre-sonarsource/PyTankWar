@@ -25,5 +25,7 @@ class TankActioner:
                 tank.next_action = Action.TURN_TURRET_RIGHT
             elif action == "FIRE":
                 tank.next_action = Action.FIRE
+            elif action == "SCAN":
+                tank.next_action = Action.SCAN
             else:
                 tank.next_action = None

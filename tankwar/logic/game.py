@@ -36,7 +36,6 @@ class Game:
 
         self.turn = 0
 
-
         self.game_runner = GameRunner()
         self.game_runner.pause()
 
@@ -60,7 +59,7 @@ class Game:
             
             for tank in tanks:
                 self.tank_actioner.read_action(tank, self.turn)
-                self.tank_updater.update(tank)
+                self.tank_updater.update(self.turn, tank)
         
             for missile in missiles:
                 self.missile_updater.update(missile)

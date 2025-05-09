@@ -4,6 +4,7 @@ from tankwar.logic.tank import Action, Tank
 
 from tankwar.logic.tank_firer import TankFirer
 from tankwar.logic.tank_mover import TankMover
+from tankwar.logic.tank_scanner import TankScanner
 
 class TankUpdater:
 
@@ -11,8 +12,9 @@ class TankUpdater:
         self.arena = arena  
         self.tank_mover = TankMover(tanks)
         self.tank_firer = TankFirer(arena, missiles)
+        self.tank_scanner = TankScanner(arena, missiles, tanks)
 
-    def update(self, tank: Tank):
+    def update(self, turn : int, tank: Tank):
         action = tank.next_action
         match action:
             case Action.FORWARD:
@@ -29,3 +31,5 @@ class TankUpdater:
                 self.tank_mover.turn_turret_right(tank)
             case Action.FIRE:
                 self.tank_firer.fire(tank)
+            case Action.SCAN:
+                self.tank_scanner.scan(turn, tank)

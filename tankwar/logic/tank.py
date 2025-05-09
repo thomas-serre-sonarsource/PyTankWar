@@ -10,6 +10,7 @@ class Action(enum.Enum):
     TURN_TURRET_LEFT = 5 
     TURN_TURRET_RIGHT = 6 
     FIRE = 7
+    SCAN = 8
 
 class Tank:
 

@@ -1,7 +1,7 @@
 [project]
 name = "pytankwar"
 version = "0.1.0"
-dependencies = ["pygame"]
+dependencies = ["pygame","flask","requests"]
 
 [build-system]
 requires = ["setuptools"]

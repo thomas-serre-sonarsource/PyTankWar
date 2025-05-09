@@ -31,8 +31,6 @@ def set_action():
 
 @app.route('/action/<color>', methods=['GET'])
 def get_action(color):
-    data = request.get_json()
-
     with open(f"{color}_action.txt", "r") as f:
         action = f.read()
 
@@ -40,6 +38,18 @@ def get_action(color):
         'action': action,
         'color': color
     })
+
+@app.route('/scan/<color>', methods=['GET'])
+def get_scan(color):
+    try :
+        with open(f"{color}_scan.txt", "r") as f:
+            scan = f.read()
+        return jsonify({
+            scan: scan,
+            color: color
+        })
+    except FileNotFoundError:
+        return jsonify({})
 
 @app.route("/turn")
 def get_turn():
