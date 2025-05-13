@@ -1,8 +1,10 @@
 # Quickstart 
 
-Clone the project, then in the directory do:
+Clone the project, then in the directory, execute the following commands. 
+This script has been tested with python3.12 only.
+
 ``` bash
-python3 -m venv .venv
+python -m venv .venv
 source .venv/bin/activate
 pip install -e .
 cd tankwar
