@@ -1,5 +1,6 @@
 import multiprocessing
-import subprocess  # Still useful for the actual execution
+import subprocess
+import time  # Still useful for the actual execution
 
 def run_process(script_path):
     try:
@@ -23,6 +24,7 @@ if __name__ == "__main__":
         process = multiprocessing.Process(target=run_process, args=(script,))
         processes.append(process)
         process.start()
+        time.sleep(1.)
 
     for process in processes:
         process.join()  # Wait for all processes to complete (optional)
