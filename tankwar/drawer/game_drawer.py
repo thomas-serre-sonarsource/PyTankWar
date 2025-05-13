@@ -23,6 +23,9 @@ class GameDrawer:
         self.last_draw = pygame.time.get_ticks()
         self.window = pygame.display.set_mode((1400, 1000))
 
+        self.turn = 0
+        self.font = pygame.font.Font(None, 36)
+
         self.arena = Arena()
         self.arena_drawer = ArenaDrawer()
 
@@ -67,6 +70,7 @@ class GameDrawer:
         self.missiles = [Missile(missile["x"], missile["y"], Orientation(missile["orientation"]), missile["color"]) for missile in json_dict["missiles"]]
         self.explosions = [Explosion(explosion["x"], explosion["y"]) for explosion in json_dict["explosions"]]
         self.targets = [Target(target["x"], target["y"], target["color"]) for target in json_dict["targets"]]
+        self.turn = json_dict["turn"]
         
         print("Ending reading state from server...", time.time())
 
@@ -82,6 +86,11 @@ class GameDrawer:
         for explosion in self.explosions:
             self.explosion_drawer.draw(self.window, self.arena_drawer, explosion)
         
+        turn_surface = self.font.render(f"Turn : {self.turn}", True, (255,255,255))  # True for antialiasing, black is the text color
+        turn_rect = turn_surface.get_rect()
+        turn_rect.topleft = (1050, 50)  # Center the text
+        self.window.blit(turn_surface, turn_rect)
+
         pygame.display.flip()
 
 if __name__ == '__main__':
