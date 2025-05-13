@@ -19,14 +19,14 @@ class OrangePlayer:
             return 
         self.last_turn = current_turn
         random_action = random.choice([
-                "FORWARD",
-                "BACKWARD",
+                #"FORWARD",
+                #"BACKWARD",
                 "TURN_LEFT",
-                "TURN_RIGHT",
-                "TURN_TURRET_LEFT",
-                "TURN_TURRET_RIGHT",
-                "FIRE",
-                "SCAN"
+                #"TURN_RIGHT",
+                #"TURN_TURRET_LEFT",
+                #"TURN_TURRET_RIGHT",
+                #"FIRE",
+                #"SCAN"
             ])
         
         print(f"AI {self.color} is playing turn {current_turn} with action {random_action}")
