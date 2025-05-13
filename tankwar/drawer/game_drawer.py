@@ -73,15 +73,14 @@ class GameDrawer:
     def draw(self):
         self.window.fill((0, 0, 0))
         self.arena_drawer.draw(self.arena, self.window)
+        for target in self.targets:
+            self.target_drawer.draw(self.window, self.arena_drawer, target)
         for tank in self.tanks:
             self.tank_drawer.draw(self.window, self.arena_drawer, tank)
         for missile in self.missiles:
             self.missile_drawer.draw(self.window, self.arena_drawer, missile)
         for explosion in self.explosions:
             self.explosion_drawer.draw(self.window, self.arena_drawer, explosion)
-
-        for target in self.targets:
-            self.target_drawer.draw(self.window, self.arena_drawer, target)
         
         pygame.display.flip()
 

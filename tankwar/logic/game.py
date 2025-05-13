@@ -27,15 +27,17 @@ class Game:
         self.tanks = [] 
         self.tanks.append(Tank(5, 5, "green"))
         self.tanks.append(Tank(15, 15, "red"))
-        self.tanks.append(Tank(5, 15, "blue"))
-        self.tanks.append(Tank(15, 5, "orange"))
+        self.tanks.append(Tank(25, 25, "blue"))
+        self.tanks.append(Tank(35, 35, "orange"))
+        self.tanks.append(Tank(45, 45, "black"))
+        self.tanks.append(Tank(55, 55, "purple"))
 
         self.tank_updater = TankUpdater(self.arena, self.missiles, self.tanks)
         self.tank_actioner = TankActioner()
 
         self.missile_collider = MissileCollider(self.missiles, self.tanks, self.explosions)
 
-        self.targets = [Target(2,2,"red"), Target(3,3,"blue"), Target(4,4,"green"), Target(1,1,"orange")] 
+        self.targets = [Target(2,2,"red"), Target(3,3,"blue"), Target(4,4,"green"), Target(1,1,"orange"), Target(0,0,"black"), Target(5,5,"purple")] 
         
         self.turn = 0
 
@@ -85,8 +87,11 @@ class Game:
         self.tanks.clear()
         self.tanks.append(Tank(5, 5, "green"))
         self.tanks.append(Tank(15, 15, "red"))
-        self.tanks.append(Tank(5, 15, "blue"))
-        self.tanks.append(Tank(15, 5, "orange"))
+        self.tanks.append(Tank(25, 25, "blue"))
+        self.tanks.append(Tank(35, 35, "orange"))
+        self.tanks.append(Tank(45, 45, "black"))
+        self.tanks.append(Tank(55, 55, "purple"))
+
         self.turn = 0
         self.game_writer.write(self)
         self.game_cleaner.clean(self)
