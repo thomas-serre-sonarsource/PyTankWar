@@ -31,6 +31,13 @@ class GameWriter:
                     "x": explosion.x,
                     "y": explosion.y,
                 } for explosion in game.explosions
+            ],
+            "targets": [
+                {
+                    "x": target.x,
+                    "y": target.y,
+                    "color": target.color,
+                } for target in game.targets
             ]
         }
         with open("game.json", "w") as file:

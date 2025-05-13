@@ -10,6 +10,7 @@ from tankwar.logic.tank import Tank
 from tankwar.logic.tank_actioner import TankActioner
 from tankwar.logic.tank_mover import TankMover
 from tankwar.logic.tank_updater import TankUpdater
+from tankwar.logic.target import Target
 
 class Game:
     
@@ -34,6 +35,8 @@ class Game:
 
         self.missile_collider = MissileCollider(self.missiles, self.tanks, self.explosions)
 
+        self.targets = [Target(2,2,"red"), Target(3,3,"blue"), Target(4,4,"green"), Target(1,1,"orange")] 
+        
         self.turn = 0
 
         self.game_runner = GameRunner()

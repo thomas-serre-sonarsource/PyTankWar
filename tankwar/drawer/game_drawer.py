@@ -3,6 +3,7 @@ import time
 import pygame
 import requests
 
+from tankwar.drawer.target_drawer import TargetDrawer
 from tankwar.logic.arena import Arena
 from arena_drawer import ArenaDrawer
 from tankwar.logic.explosion import Explosion
@@ -12,6 +13,7 @@ from missile_drawer import MissileDrawer
 from tankwar.logic.orientation import Orientation
 from tankwar.logic.tank import Tank
 from tank_drawer import TankDrawer
+from tankwar.logic.target import Target
 
 pygame.init()
 
@@ -33,6 +35,8 @@ class GameDrawer:
         self.tanks = [] 
         self.tank_drawer = TankDrawer()
 
+        self.targets = []
+        self.target_drawer = TargetDrawer()
 
     def run(self):
         while True:
@@ -62,6 +66,8 @@ class GameDrawer:
         self.tanks = [Tank(tank["x"], tank["y"], tank["color"], Orientation(tank["orientation"]), Orientation(tank["turret_orientation"])) for tank in json_dict["tanks"]]
         self.missiles = [Missile(missile["x"], missile["y"], Orientation(missile["orientation"]), missile["color"]) for missile in json_dict["missiles"]]
         self.explosions = [Explosion(explosion["x"], explosion["y"]) for explosion in json_dict["explosions"]]
+        self.targets = [Target(target["x"], target["y"], target["color"]) for target in json_dict["targets"]]
+        
         print("Ending reading state from server...", time.time())
 
     def draw(self):
@@ -74,6 +80,9 @@ class GameDrawer:
         for explosion in self.explosions:
             self.explosion_drawer.draw(self.window, self.arena_drawer, explosion)
 
+        for target in self.targets:
+            self.target_drawer.draw(self.window, self.arena_drawer, target)
+        
         pygame.display.flip()
 
 if __name__ == '__main__':
