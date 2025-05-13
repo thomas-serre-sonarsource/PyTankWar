@@ -10,3 +10,9 @@ pip install -e .
 cd tankwar
 python start.py
 ```
+You should see a pygame window. Then, if you execute following scripts, things should start moving : 
+
+```bash
+cd ..
+python run.py
+```
