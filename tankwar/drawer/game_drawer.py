@@ -21,7 +21,7 @@ class GameDrawer:
     
     def __init__(self):
         self.last_draw = pygame.time.get_ticks()
-        self.window = pygame.display.set_mode((1600, 1200))
+        self.window = pygame.display.set_mode((1400, 1000))
 
         self.arena = Arena()
         self.arena_drawer = ArenaDrawer()

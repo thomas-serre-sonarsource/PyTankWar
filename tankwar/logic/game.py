@@ -8,9 +8,9 @@ from tankwar.logic.missile_collider import MissileCollider
 from tankwar.logic.missile_updater import MissileUpdater
 from tankwar.logic.tank import Tank
 from tankwar.logic.tank_actioner import TankActioner
-from tankwar.logic.tank_mover import TankMover
 from tankwar.logic.tank_updater import TankUpdater
 from tankwar.logic.target import Target
+from tankwar.logic.target_collider import TargetCollider
 
 class Game:
     
@@ -26,19 +26,27 @@ class Game:
 
         self.tanks = [] 
         self.tanks.append(Tank(5, 5, "green"))
-        self.tanks.append(Tank(15, 15, "red"))
-        self.tanks.append(Tank(25, 25, "blue"))
-        self.tanks.append(Tank(35, 35, "orange"))
-        self.tanks.append(Tank(45, 45, "black"))
-        self.tanks.append(Tank(55, 55, "purple"))
+        self.tanks.append(Tank(13, 13, "red"))
+        self.tanks.append(Tank(21, 21, "blue"))
+        self.tanks.append(Tank(29, 29, "orange"))
+        self.tanks.append(Tank(37, 37, "black"))
+        self.tanks.append(Tank(45, 45, "purple"))
 
         self.tank_updater = TankUpdater(self.arena, self.missiles, self.tanks)
         self.tank_actioner = TankActioner()
 
         self.missile_collider = MissileCollider(self.missiles, self.tanks, self.explosions)
 
-        self.targets = [Target(2,2,"red"), Target(3,3,"blue"), Target(4,4,"green"), Target(1,1,"orange"), Target(0,0,"black"), Target(5,5,"purple")] 
+        self.targets = [] 
+        self.targets.append(Target(5, 5, "green"))
+        self.targets.append(Target(13, 13, "red"))
+        self.targets.append(Target(21, 21, "blue"))
+        self.targets.append(Target(29, 29, "orange"))
+        self.targets.append(Target(37, 37, "black"))
+        self.targets.append(Target(45, 45, "purple"))
         
+        self.target_collider = TargetCollider(self.arena, self.targets, self.tanks)
+
         self.turn = 0
 
         self.game_runner = GameRunner()
@@ -70,6 +78,7 @@ class Game:
                 self.missile_updater.update(missile)
             
             self.missile_collider.collide()
+            self.target_collider.collide()
             self.turn += 1
             self.game_writer.write(self)
             self.game_cleaner.clean(self)
