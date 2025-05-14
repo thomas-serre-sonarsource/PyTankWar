@@ -55,10 +55,8 @@ class GameDrawer:
             time.sleep(0.01)
 
     def read_state(self):
-        print("Reading state from server...", time.time())
-
+        
         r = requests.get("http://127.0.0.1:5000/status")
-        print("State downloaded from server...", time.time())
         json_str = r.content.decode("utf-8")
         try :
             json_dict = json.loads(json_str)
@@ -75,8 +73,6 @@ class GameDrawer:
         self.scores = json_dict["scores"]
         self.game_status = json_dict["status"]
         
-        print("Ending reading state from server...", time.time())
-
     def draw(self):
         self.window.fill((0, 0, 0))
         self.arena_drawer.draw(self.arena, self.window)

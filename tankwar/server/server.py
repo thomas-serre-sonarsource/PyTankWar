@@ -2,6 +2,10 @@ import json
 import time
 from flask import Flask, request, jsonify
 
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
 app = Flask(__name__)
 
 @app.route("/")
@@ -45,8 +49,8 @@ def get_scan(color):
         with open(f"{color}_scan.txt", "r") as f:
             scan = f.read()
         return jsonify({
-            scan: scan,
-            color: color
+            "scan": scan,
+            "color": color
         })
     except FileNotFoundError:
         return jsonify({})

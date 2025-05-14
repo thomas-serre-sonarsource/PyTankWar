@@ -71,8 +71,6 @@ class Game:
         
     def update(self, tanks, missiles):
         if time.time() - self.last_update > 1.:
-            print("Updating game state...", time.time())
-
             self.last_update = time.time()
             
             if not self.game_runner.is_running():
