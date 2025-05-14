@@ -69,10 +69,8 @@ def get_turn():
 
 @app.route("/status")
 def get_game_status():
-    print("Fetching game status...", time.time())
     with open("game.json", "r") as f:
         content = f.read()
-    print("Game status fetched.", time.time())
     return content
 
 @app.route("/game/pause", methods=["POST"])
