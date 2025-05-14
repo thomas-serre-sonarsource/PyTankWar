@@ -25,7 +25,6 @@ class GreenPlayer:
                 "TURN_RIGHT",
                 "TURN_TURRET_LEFT",
                 "TURN_TURRET_RIGHT",
-                "FIRE",
                 "SCAN"
             ])
         
