@@ -121,10 +121,9 @@ class OrangePlayer:
 
         # Need to scan if this is the first turn or if it's time for a periodic scan
         need_scan = (self.turn_of_last_scan is None or
-                     current_turn - self.turn_of_last_scan >= 5 or
-                     self.estimated_x is None)
+                     current_turn - self.turn_of_last_scan >= 5)
 
-        if current_turn - self.turn_of_last_scan == 1:
+        if self.turn_of_last_scan is not None and (current_turn - self.turn_of_last_scan == 1):
             # If we just scanned, update our estimated position
             self.update_position_from_scan()
         if need_scan:
@@ -155,6 +154,48 @@ class OrangePlayer:
         self.current_orientation = scan_result.orientation
         self.target_x = scan_result.target_x
         self.target_y = scan_result.target_y
+
+    def update_position_based_on_action(self, action):
+        """
+        Update our estimated position based on the action we just took
+        """
+        if self.current_x is None or self.current_y is None or self.current_orientation is None:
+            # Can't update if we don't have a current position
+            return
+
+        if action == "FORWARD":
+            if self.current_orientation == 1:  # NORTH
+                self.current_y -= 1
+            elif self.current_orientation == 2:  # WEST
+                self.current_x -= 1
+            elif self.current_orientation == 3:  # SOUTH
+                self.current_y += 1
+            elif self.current_orientation == 4:  # EAST
+                self.current_x += 1
+
+        elif action == "BACKWARD":
+            if self.current_orientation == 1:  # NORTH
+                self.current_y += 1
+            elif self.current_orientation == 2:  # WEST
+                self.current_x += 1
+            elif self.current_orientation == 3:  # SOUTH
+                self.current_y -= 1
+            elif self.current_orientation == 4:  # EAST
+                self.current_x -= 1
+
+        elif action == "TURN_LEFT":
+            # Rotate counter-clockwise: N(1)->W(2)->S(3)->E(4)->N(1)
+            self.current_orientation = self.current_orientation % 4 + 1
+            if self.current_orientation == 0:
+                self.current_orientation = 4
+
+        elif action == "TURN_RIGHT":
+            # Rotate clockwise: N(1)->E(4)->S(3)->W(2)->N(1)
+            self.current_orientation -= 1
+            if self.current_orientation == 0:
+                self.current_orientation = 4
+
+        print(f"Updated position after {action}: ({self.current_x},{self.current_y}), orientation: {self.current_orientation}")
 
     def set_action(self, action_str, turn):
         requests.post(f"http://127.0.0.1:5000/action",json={"action": action_str, "turn": turn, "color": self.color})
