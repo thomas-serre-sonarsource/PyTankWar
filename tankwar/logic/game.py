@@ -32,7 +32,7 @@ class Game:
         self.tanks.append(Tank(37, 37, "black"))
         self.tanks.append(Tank(45, 45, "purple"))
 
-        self.tank_updater = TankUpdater(self.arena, self.missiles, self.tanks)
+
         self.tank_actioner = TankActioner()
 
         self.missile_collider = MissileCollider(self.missiles, self.tanks, self.explosions)
@@ -45,6 +45,8 @@ class Game:
         self.targets.append(Target(37, 37, "black"))
         self.targets.append(Target(45, 45, "purple"))
 
+        self.tank_updater = TankUpdater(self.arena, self.missiles, self.tanks, self.targets)
+        
         self.scores = {}
         self.scores["green"] = 0
         self.scores["red"] = 0

@@ -110,23 +110,26 @@ class GameDrawer:
         }
         
         for color in colors.COLORS:
-            tank = [t for t in self.tanks if t.color == color][0]
-            target = [t for t in self.targets if t.color == color][0]
+            tank = [t for t in self.tanks if t.color == color]
+            target = [t for t in self.targets if t.color == color]
             
-            tank_surface = self.font.render(f"{color} tank : x : {tank.x}, y : {tank.y}", True, colors_dict[color])
-            tank_rect = tank_surface.get_rect()
-            tank_rect.topleft = (1050, y0)  
-            self.window.blit(tank_surface, tank_rect) 
-            
-            target_surface = self.font.render(f"{color} target: x : {target.x}, y : {target.y}", True, colors_dict[color])
-            target_rect = target_surface.get_rect()
-            target_rect.topleft = (1050, y0+25)
-            self.window.blit(target_surface, target_rect) 
-            
-            score_surface = self.font.render(f"{color} score: {self.scores[color]}", True, colors_dict[color])
-            score_rect = score_surface.get_rect()
-            score_rect.topleft = (1050, y0+50)
-            self.window.blit(score_surface, score_rect) 
+            if len(tank) > 0 and len(target) > 0:
+                tank = tank[0]
+                target = target[0]
+                tank_surface = self.font.render(f"{color} tank : x : {tank.x}, y : {tank.y}", True, colors_dict[color])
+                tank_rect = tank_surface.get_rect()
+                tank_rect.topleft = (1050, y0)  
+                self.window.blit(tank_surface, tank_rect) 
+                
+                target_surface = self.font.render(f"{color} target: x : {target.x}, y : {target.y}", True, colors_dict[color])
+                target_rect = target_surface.get_rect()
+                target_rect.topleft = (1050, y0+25)
+                self.window.blit(target_surface, target_rect) 
+                
+                score_surface = self.font.render(f"{color} score: {self.scores[color]}", True, colors_dict[color])
+                score_rect = score_surface.get_rect()
+                score_rect.topleft = (1050, y0+50)
+                self.window.blit(score_surface, score_rect) 
             
             y0 += 100
         pygame.display.flip()
