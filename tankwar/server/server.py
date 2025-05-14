@@ -62,6 +62,7 @@ def get_turn():
             content = f.read()
         json_dict = json.loads(content)
     except json.JSONDecodeError:
+        time.sleep(0.01)
         with open("game.json", "r") as f:
             content = f.read()
             json_dict = json.loads(content)
