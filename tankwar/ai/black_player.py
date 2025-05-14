@@ -15,7 +15,7 @@ GRID_SIZE = 50
 with open(LOG_FILE, "w") as f:
     f.write("")
 
-logging.basicConfig(filename=LOG_FILE, level=logging.DEBUG)
+logging.basicConfig(filename=LOG_FILE, level=logging.INFO)
 
 
 def exc_handler(exctype, value, tb):
@@ -23,6 +23,17 @@ def exc_handler(exctype, value, tb):
 
 
 sys.excepthook = exc_handler
+
+POSSIBLE_ACTIONS = [
+    "FORWARD",
+    "BACKWARD",
+    "TURN_LEFT",
+    "TURN_RIGHT",
+    "TURN_TURRET_LEFT",
+    "TURN_TURRET_RIGHT",
+    "FIRE",
+    "SCAN",
+]
 
 
 @dataclass
@@ -60,41 +71,67 @@ class BlackPlayer:
 
     def play(self):
         current_turn = self.get_turn()
+        logging.info(f"Current turn: {current_turn}, Last turn: {self.last_turn}")
+
         if current_turn == self.last_turn:
             time.sleep(0.1)
             return
+
         self.last_turn = current_turn
-        if self.last_action is None:
+        logging.info(f"Processing new turn {current_turn}")
+
+        if self.last_action is None or current_turn % 5 == 0:
+            logging.info("Performing initial scan")
             next_action = "SCAN"
         elif self.last_action == "SCAN":
+            logging.info(
+                "Previous action was SCAN - getting results and computing path"
+            )
             results = self.get_scan_results()
             self.last_scan_results = results
+            logging.info(
+                f"Scan results: x={results.x}, y={results.y}, target_x={results.target_x}, target_y={results.target_y}"
+            )
+
             logging.info("Computing path to target")
             self.path = compute_fastest_path(
                 results.x, results.y, results.target_x, results.target_y
             )
-            logging.info(f"Path: {self.path}")
+            logging.info(f"Computed path: {self.path}")
+
             next_action = orientation_to_action(
                 Orientation(self.path[0]),
                 Orientation(self.last_scan_results.orientation),
             )
+            logging.info(f"Next action based on path: {next_action}")
             self.path.pop(0)
+            logging.info(f"Remaining path: {self.path}")
         else:
+            logging.info(f"Previous action was {self.last_action} - continuing path")
             next_action = orientation_to_action(
                 Orientation(self.path[0]),
                 Orientation(self.last_scan_results.orientation),
             )
+            logging.info(f"Next action based on path: {next_action}")
             self.path.pop(0)
+            logging.info(f"Remaining path: {self.path}")
 
         if self.current_orientation is not None:
+            old_orientation = self.current_orientation
             self.current_orientation = update_orientation(
                 self.current_orientation, next_action
             )
+            logging.info(
+                f"Updated orientation: {old_orientation} -> {self.current_orientation}"
+            )
 
+        logging.info(f"Setting action: {next_action} for turn {current_turn}")
         self.set_action(next_action, current_turn)
         self.last_action = next_action
 
     def set_action(self, action_str, turn):
+        if action_str not in POSSIBLE_ACTIONS:
+            raise ValueError(f"Invalid action: {action_str}")
         requests.post(
             "http://127.0.0.1:5000/action",
             json={"action": action_str, "turn": turn, "color": self.color},
@@ -120,37 +157,41 @@ def get_wrapped_distance(x1: int, y1: int, x2: int, y2: int) -> Tuple[int, int]:
     dx = x2 - x1
     dy = y2 - y1
 
-    # Calculate wrapped distance
-    wrapped_dx = (
-        dx - GRID_SIZE
-        if dx > GRID_SIZE // 2
-        else dx + GRID_SIZE
-        if dx < -GRID_SIZE // 2
-        else dx
-    )
-    wrapped_dy = (
-        dy - GRID_SIZE
-        if dy > GRID_SIZE // 2
-        else dy + GRID_SIZE
-        if dy < -GRID_SIZE // 2
-        else dy
-    )
+    # # Calculate wrapped distance
+    # wrapped_dx = (
+    #     dx - GRID_SIZE
+    #     if dx > GRID_SIZE // 2
+    #     else dx + GRID_SIZE
+    #     if dx < -GRID_SIZE // 2
+    #     else dx
+    # )
+    # wrapped_dy = (
+    #     dy - GRID_SIZE
+    #     if dy > GRID_SIZE // 2
+    #     else dy + GRID_SIZE
+    #     if dy < -GRID_SIZE // 2
+    #     else dy
+    # )
+
+    wrapped_dx = dx
+    wrapped_dy = dy
 
     return wrapped_dx, wrapped_dy
 
 
 def get_orientation_for_direction(dx: int, dy: int) -> int:
-    """
-    Convert a direction vector (dx, dy) into an orientation (1-4).
-    1: Right (1,0)
-    2: Down (0,1)
-    3: Left (-1,0)
-    4: Up (0,-1)
-    """
-    if abs(dx) > abs(dy):
-        return 1 if dx > 0 else 3
+    # The gris starts from the top left being (0, 0)
+
+    if dx == 0 and dy == 1:
+        return 2
+    elif dx == 1 and dy == 0:
+        return 1
+    elif dx == 0 and dy == -1:
+        return 4
+    elif dx == -1 and dy == 0:
+        return 3
     else:
-        return 2 if dy > 0 else 4
+        raise ValueError(f"Invalid direction: dx={dx}, dy={dy}")
 
 
 def compute_fastest_path(x: int, y: int, x_target: int, y_target: int) -> List[int]:
@@ -191,14 +232,34 @@ def orientation_to_action(
 ) -> str:
     if target_orientation == current_orientation:
         return "FORWARD"
-    elif target_orientation == current_orientation + 1:
-        return "RIGHT"
-    elif target_orientation == current_orientation - 1:
-        return "LEFT"
-    elif target_orientation == current_orientation + 2:
-        return "BACKWARD"
-    elif target_orientation == current_orientation - 2:
-        return "FORWARD"
+    elif current_orientation == Orientation.NORTH:
+        if target_orientation == Orientation.EAST:
+            return "TURN_RIGHT"
+        elif target_orientation == Orientation.WEST:
+            return "TURN_LEFT"
+        elif target_orientation == Orientation.SOUTH:
+            return "TURN_LEFT"
+    elif current_orientation == Orientation.EAST:
+        if target_orientation == Orientation.SOUTH:
+            return "TURN_RIGHT"
+        elif target_orientation == Orientation.NORTH:
+            return "TURN_LEFT"
+        elif target_orientation == Orientation.WEST:
+            return "TURN_LEFT"
+    elif current_orientation == Orientation.SOUTH:
+        if target_orientation == Orientation.WEST:
+            return "TURN_RIGHT"
+        elif target_orientation == Orientation.EAST:
+            return "TURN_LEFT"
+        elif target_orientation == Orientation.NORTH:
+            return "TURN_LEFT"
+    elif current_orientation == Orientation.WEST:
+        if target_orientation == Orientation.NORTH:
+            return "TURN_RIGHT"
+        elif target_orientation == Orientation.SOUTH:
+            return "TURN_LEFT"
+        elif target_orientation == Orientation.EAST:
+            return "TURN_LEFT"
     else:
         raise ValueError(
             f"Invalid orientation: {target_orientation} {current_orientation}"
