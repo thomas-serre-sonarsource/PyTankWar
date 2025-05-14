@@ -99,7 +99,7 @@ class BlackPlayer:
 
         next_action = None
 
-        if self.last_action is None or current_turn % 5 == 0:
+        if self.last_action is None or current_turn % 10 == 0:
             logging.info("Performing initial scan or periodic scan")
             next_action = "SCAN"
         elif self.last_action == "SCAN":
@@ -118,7 +118,11 @@ class BlackPlayer:
                 if results.target_x is not None and results.target_y is not None:
                     logging.info("Computing path to target")
                     self.path = compute_fastest_path(
-                        results.x, results.y, results.target_x, results.target_y
+                        results.x,
+                        results.y,
+                        results.target_x,
+                        results.target_y,
+                        self.current_orientation,
                     )
                     logging.info(f"Computed path: {self.path}")
 
@@ -270,68 +274,199 @@ def get_orientation_for_direction(dx: int, dy: int) -> int:
         raise ValueError(f"Invalid direction: dx={dx}, dy={dy}")
 
 
+def get_opposite_orientation(orientation: Orientation) -> Orientation:
+    if orientation == Orientation.NORTH:
+        return Orientation.SOUTH
+    if orientation == Orientation.EAST:
+        return Orientation.WEST
+    if orientation == Orientation.SOUTH:
+        return Orientation.NORTH
+    if orientation == Orientation.WEST:
+        return Orientation.EAST
+    # Should not happen with valid Orientation enum
+    raise ValueError(f"Invalid orientation for get_opposite: {orientation}")
+
+
 def compute_fastest_path(
-    x: int, y: int, x_target: int, y_target: int
+    x: int,
+    y: int,
+    x_target: int,
+    y_target: int,
+    current_tank_orientation: Optional[Orientation] = None,
 ) -> List[Orientation]:
     """
     Compute the fastest path from (x,y) to (x_target, y_target) on a wrapping grid.
     Returns a list of Orientations representing the sequence of MOVEMENT FACINGS needed.
+    Prefers continuing in a straight line if possible.
+    The first step considers current_tank_orientation to avoid immediate 180-degree turns if a 90-degree alternative exists.
     """
-    path: List[Orientation] = []
+    path_orientations: List[Orientation] = []
     current_x, current_y = x, y
 
-    # Limit path length to avoid infinite loops in case of issues
     max_path_len = 2 * GRID_SIZE
 
-    while (current_x != x_target or current_y != y_target) and len(path) < max_path_len:
-        dx, dy = get_wrapped_distance(current_x, current_y, x_target, y_target)
-
-        chosen_orientation: Optional[Orientation] = None
-        if abs(dx) >= abs(
-            dy
-        ):  # Prefer horizontal if distances are equal or dx is larger
-            if dx > 0:
-                chosen_orientation = Orientation.EAST
-                current_x = (current_x + 1) % GRID_SIZE
-            elif dx < 0:
-                chosen_orientation = Orientation.WEST
-                current_x = (current_x - 1 + GRID_SIZE) % GRID_SIZE
-            # if dx is 0, this block might be skipped if dy is also 0.
-            # The while loop condition (current_x != x_target or current_y != y_target) handles this.
-
-        # if chosen_orientation is None and dy != 0: # if no horizontal move was made and vertical move is possible
-        # elif abs(dy) > abs(dx): # Original logic: strictly greater
-        # Prioritize move if not yet chosen or if vertical is distinctly larger
-        if (
-            chosen_orientation is None and dy != 0
-        ):  # If horizontal was zero, consider vertical
-            if dy > 0:
-                chosen_orientation = Orientation.SOUTH
-                current_y = (current_y + 1) % GRID_SIZE
-            elif dy < 0:
-                chosen_orientation = Orientation.NORTH
-                current_y = (current_y - 1 + GRID_SIZE) % GRID_SIZE
-        elif chosen_orientation is None and dx == 0 and dy == 0:
-            # This case means we are at the target, loop should terminate.
-            # Added for safety, though while condition should catch it.
+    for step_num in range(max_path_len):
+        if current_x == x_target and current_y == y_target:
             break
 
-        if chosen_orientation:
-            path.append(chosen_orientation)
-        else:
-            # This could happen if dx and dy are both zero, meaning we are at the target.
-            # The loop condition should handle this. If it's reached, log it.
-            logging.warning(
-                f"Path computation: dx={dx}, dy={dy} led to no chosen orientation. current=({current_x},{current_y}), target=({x_target},{y_target})"
-            )
-            break  # Should be at target
+        dx, dy = get_wrapped_distance(current_x, current_y, x_target, y_target)
+        chosen_orientation: Optional[Orientation] = None
+        log_action_type = "greedy"  # Default log type
 
-    if len(path) >= max_path_len:
+        if dx == 0 and dy == 0:  # Should be caught by loop condition check too
+            logging.debug(
+                f"compute_fastest_path: Target reached at ({current_x},{current_y}). Step: {step_num}"
+            )
+            break
+
+        if step_num == 0:  # Logic for the very first segment of the path
+            # 1. Determine pure greedy first step
+            pure_greedy_first_step: Optional[Orientation] = None
+            if abs(dx) > abs(dy):
+                pure_greedy_first_step = (
+                    Orientation.EAST if dx > 0 else Orientation.WEST
+                )
+            elif abs(dy) > abs(dx):
+                pure_greedy_first_step = (
+                    Orientation.SOUTH if dy > 0 else Orientation.NORTH
+                )
+            else:  # abs(dx) == abs(dy), and not both zero
+                if dx > 0:
+                    pure_greedy_first_step = Orientation.EAST
+                elif dx < 0:
+                    pure_greedy_first_step = Orientation.WEST
+                elif dy > 0:
+                    pure_greedy_first_step = Orientation.SOUTH
+                elif dy < 0:
+                    pure_greedy_first_step = Orientation.NORTH
+
+            chosen_orientation = pure_greedy_first_step
+            log_action_type = "first_greedy"
+
+            if pure_greedy_first_step and current_tank_orientation:
+                if pure_greedy_first_step == get_opposite_orientation(
+                    current_tank_orientation
+                ):
+                    logging.debug(
+                        f"Path Step 0: Greedy choice ({pure_greedy_first_step}) is 180 deg from current ({current_tank_orientation}). Exploring 90 deg alternatives."
+                    )
+                    # Greedy choice is a 180 turn. Explore 90-degree alternatives.
+                    alt_orientation: Optional[Orientation] = None
+                    can_move_east = dx > 0
+                    can_move_west = dx < 0
+                    can_move_south = dy > 0
+                    can_move_north = dy < 0
+
+                    # Determine potential 90-degree turn directions
+                    left_turn_orientation = _TURN_LEFT_MAP[current_tank_orientation]
+                    right_turn_orientation = _TURN_RIGHT_MAP[current_tank_orientation]
+
+                    # Check if left turn is valid and makes progress
+                    if left_turn_orientation == Orientation.EAST and can_move_east:
+                        alt_orientation = Orientation.EAST
+                    elif left_turn_orientation == Orientation.WEST and can_move_west:
+                        alt_orientation = Orientation.WEST
+                    elif left_turn_orientation == Orientation.SOUTH and can_move_south:
+                        alt_orientation = Orientation.SOUTH
+                    elif left_turn_orientation == Orientation.NORTH and can_move_north:
+                        alt_orientation = Orientation.NORTH
+
+                    # If left turn wasn't chosen, check right turn (or if both are valid, this could be refined)
+                    if not alt_orientation:
+                        if right_turn_orientation == Orientation.EAST and can_move_east:
+                            alt_orientation = Orientation.EAST
+                        elif (
+                            right_turn_orientation == Orientation.WEST and can_move_west
+                        ):
+                            alt_orientation = Orientation.WEST
+                        elif (
+                            right_turn_orientation == Orientation.SOUTH
+                            and can_move_south
+                        ):
+                            alt_orientation = Orientation.SOUTH
+                        elif (
+                            right_turn_orientation == Orientation.NORTH
+                            and can_move_north
+                        ):
+                            alt_orientation = Orientation.NORTH
+
+                    if alt_orientation:
+                        logging.debug(
+                            f"Path Step 0: Avoiding 180 turn. Chosen alternative: {alt_orientation}"
+                        )
+                        chosen_orientation = alt_orientation
+                        log_action_type = "first_alt_90deg"
+                    else:
+                        logging.debug(
+                            f"Path Step 0: No suitable 90deg turn found. Sticking with 180deg greedy: {pure_greedy_first_step}"
+                        )
+        else:  # Logic for subsequent segments (step_num > 0)
+            last_planned_move = path_orientations[-1]
+            # Try to continue straight
+            if last_planned_move == Orientation.EAST and dx > 0:
+                chosen_orientation = Orientation.EAST
+            elif last_planned_move == Orientation.WEST and dx < 0:
+                chosen_orientation = Orientation.WEST
+            elif last_planned_move == Orientation.SOUTH and dy > 0:
+                chosen_orientation = Orientation.SOUTH
+            elif last_planned_move == Orientation.NORTH and dy < 0:
+                chosen_orientation = Orientation.NORTH
+
+            if chosen_orientation:
+                log_action_type = "straight"
+            else:
+                # Fallback to greedy if cannot continue straight
+                log_action_type = "greedy_fallback"
+                if abs(dx) > abs(dy):
+                    chosen_orientation = (
+                        Orientation.EAST if dx > 0 else Orientation.WEST
+                    )
+                elif abs(dy) > abs(dx):
+                    chosen_orientation = (
+                        Orientation.SOUTH if dy > 0 else Orientation.NORTH
+                    )
+                else:  # abs(dx) == abs(dy), and not both zero
+                    if dx > 0:
+                        chosen_orientation = Orientation.EAST
+                    elif dx < 0:
+                        chosen_orientation = Orientation.WEST
+                    elif dy > 0:
+                        chosen_orientation = Orientation.SOUTH
+                    elif dy < 0:
+                        chosen_orientation = Orientation.NORTH
+
+        # Update position based on the decided orientation
+        if chosen_orientation == Orientation.EAST:
+            current_x = (current_x + 1) % GRID_SIZE
+        elif chosen_orientation == Orientation.WEST:
+            current_x = (current_x - 1 + GRID_SIZE) % GRID_SIZE
+        elif chosen_orientation == Orientation.SOUTH:
+            current_y = (current_y + 1) % GRID_SIZE
+        elif chosen_orientation == Orientation.NORTH:
+            current_y = (current_y - 1 + GRID_SIZE) % GRID_SIZE
+
+        if chosen_orientation:
+            logging.debug(
+                f"Path step {step_num}: To ({current_x},{current_y}). Target: ({x_target},{y_target}). Move: {chosen_orientation}, Type: {log_action_type}, dx:{dx}, dy:{dy}"
+            )
+            path_orientations.append(chosen_orientation)
+        else:
+            logging.error(
+                f"compute_fastest_path: No orientation chosen at step {step_num}. "
+                f"current=({x},{y}), internal_curr=({current_x},{current_y}), target=({x_target},{y_target}), dx={dx}, dy={dy}. Breaking."
+            )
+            break
+
+    if not path_orientations and (x != x_target or y != y_target):
         logging.warning(
-            f"Path computation exceeded max length. current=({current_x},{current_y}), target=({x_target},{y_target})"
+            f"Path computation resulted in empty path but not at target. Start:({x},{y}), Target:({x_target},{y_target})"
+        )
+    elif len(path_orientations) >= max_path_len:
+        logging.warning(
+            f"Path computation reached max length ({max_path_len}). current=({current_x},{current_y}), target=({x_target},{y_target})"
         )
 
-    return path
+    return path_orientations
 
 
 def orientation_to_action(
