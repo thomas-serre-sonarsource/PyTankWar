@@ -4,6 +4,7 @@ class GameWriter:
     
     def write(self, game:"Game"):
         json_dict = {
+            "status": game.game_runner.get_status(),
             "turn": game.turn,
             "arena": {
                 "cell_per_row": game.arena.cell_per_row,
@@ -38,7 +39,8 @@ class GameWriter:
                     "y": target.y,
                     "color": target.color,
                 } for target in game.targets
-            ]
+            ], 
+            "scores": game.scores,
         }
         with open("game.json", "w") as file:
             file.write(json.dumps(json_dict, indent=4))

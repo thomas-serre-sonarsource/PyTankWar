@@ -5,10 +5,11 @@ from tankwar.logic.target import Target
 
 class TargetCollider:
 
-    def __init__(self, arena:Arena, targets: list[Target], tanks: list[Tank]):
+    def __init__(self, arena:Arena, targets: list[Target], tanks: list[Tank], scores: dict[str, int]):
         self.targets = targets
         self.tanks = tanks  
         self.arena = arena
+        self.scores = scores
 
     def collide(self):
         
@@ -23,6 +24,7 @@ class TargetCollider:
         
         for target in targets_to_remove:
             self.targets.remove(target)
+            self.scores[target.color] += 1
             x, y = None, None
             while True:
                 x = random.randint(0, self.arena.cell_per_row - 1)

@@ -4,6 +4,7 @@ import pygame
 import requests
 
 from tankwar.drawer.target_drawer import TargetDrawer
+from tankwar.logic import colors
 from tankwar.logic.arena import Arena
 from arena_drawer import ArenaDrawer
 from tankwar.logic.explosion import Explosion
@@ -71,6 +72,8 @@ class GameDrawer:
         self.explosions = [Explosion(explosion["x"], explosion["y"]) for explosion in json_dict["explosions"]]
         self.targets = [Target(target["x"], target["y"], target["color"]) for target in json_dict["targets"]]
         self.turn = json_dict["turn"]
+        self.scores = json_dict["scores"]
+        self.game_status = json_dict["status"]
         
         print("Ending reading state from server...", time.time())
 
@@ -86,11 +89,46 @@ class GameDrawer:
         for explosion in self.explosions:
             self.explosion_drawer.draw(self.window, self.arena_drawer, explosion)
         
-        turn_surface = self.font.render(f"Turn : {self.turn}", True, (255,255,255))  # True for antialiasing, black is the text color
+        turn_surface = self.font.render(f"Turn : {self.turn}", True, (255,255,255))
         turn_rect = turn_surface.get_rect()
-        turn_rect.topleft = (1050, 50)  # Center the text
+        turn_rect.topleft = (1050, 50) 
         self.window.blit(turn_surface, turn_rect)
 
+        status_surface = self.font.render(f"Status : {self.game_status}", True, (255,255,255))
+        status_rect = turn_surface.get_rect()
+        status_rect.topleft = (1050, 75)
+        self.window.blit(status_surface, status_rect)
+
+        y0 = 125
+        colors_dict = {
+            "red": (255, 0, 0),
+            "blue": (0, 0, 255),
+            "orange": (255, 165, 0),
+            "black": (64, 64, 64),
+            "purple": (128, 0, 128),
+            "green": (0, 255, 0),
+        }
+        
+        for color in colors.COLORS:
+            tank = [t for t in self.tanks if t.color == color][0]
+            target = [t for t in self.targets if t.color == color][0]
+            
+            tank_surface = self.font.render(f"{color} tank : x : {tank.x}, y : {tank.y}", True, colors_dict[color])
+            tank_rect = tank_surface.get_rect()
+            tank_rect.topleft = (1050, y0)  
+            self.window.blit(tank_surface, tank_rect) 
+            
+            target_surface = self.font.render(f"{color} target: x : {target.x}, y : {target.y}", True, colors_dict[color])
+            target_rect = target_surface.get_rect()
+            target_rect.topleft = (1050, y0+25)
+            self.window.blit(target_surface, target_rect) 
+            
+            score_surface = self.font.render(f"{color} score: {self.scores[color]}", True, colors_dict[color])
+            score_rect = score_surface.get_rect()
+            score_rect.topleft = (1050, y0+50)
+            self.window.blit(score_surface, score_rect) 
+            
+            y0 += 100
         pygame.display.flip()
 
 if __name__ == '__main__':

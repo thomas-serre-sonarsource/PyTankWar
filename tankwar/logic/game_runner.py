@@ -32,3 +32,11 @@ class GameRunner:
             return False
         except FileNotFoundError:
             return False
+        
+    def get_status(self):
+        try:
+            with open("game_status.txt", "r") as file:
+                content = file.read()
+            return content.strip()
+        except FileNotFoundError:
+            return None
