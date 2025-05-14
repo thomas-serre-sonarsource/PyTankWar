@@ -51,7 +51,7 @@ class OrangePlayer:
             target_y=scan_data["target_y"]
         )
         except:
-            scan_result = "missing"
+            scan_result = None
         return scan_result
 
     def play(self):
@@ -61,9 +61,9 @@ class OrangePlayer:
             return
         self.last_turn = current_turn
 
-        if current_turn > 2:
-            scan_result_str = requests.get(f"http://127.0.0.1:5000/scan/{self.color}").content.decode("utf-8")
-            scan_result = self.parse_scan_result(scan_result_str)
+        #if current_turn > 0:
+        scan_result_str = requests.get(f"http://127.0.0.1:5000/scan/{self.color}").content.decode("utf-8")
+        scan_result = self.parse_scan_result(scan_result_str)
 
         random_action = random.choice([
                 "FORWARD",
@@ -77,7 +77,10 @@ class OrangePlayer:
             ])
 
         print(f"AI {self.color} is playing turn {current_turn} with action {random_action}")
-        self.set_action("SCAN", current_turn)
+        chosen_action = "SCAN"
+        self.set_action(chosen_action, current_turn)
+        if chosen_action == "SCAN":
+            self.turn_of_last_scan = current_turn
 
     def set_action(self, action_str, turn):
         requests.post(f"http://127.0.0.1:5000/action",json={"action": action_str, "turn": turn, "color": self.color})
